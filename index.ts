@@ -11,29 +11,31 @@ export function vif<TResult>(expression: BoolExp, value: TResult, alternativeVal
     return exp ? value : alternativeValue;
 }
 
-export function classes(classesObj: Record<string, BoolExp>, requiredClasses: string[] | string = undefined): string {
-    let reqClassesString = "";
+export function classes(conditionalClasses: Record<string, BoolExp> = {}, requiredClasses: string[] | string = undefined): string {
+    let requiredClassesString = "";
     if (requiredClasses !== undefined) {
-        reqClassesString = Array.isArray(requiredClasses)
-            ? (<string[]>requiredClasses).map(c => c.trim()).join(" ")
+        requiredClassesString = Array.isArray(requiredClasses)
+            ? (<string[]>requiredClasses).filter(c => c).map(c => c.trim()).filter(c => c).join(" ")
             : <string>requiredClasses;
-        reqClassesString = reqClassesString.trim();
-        if (reqClassesString) {
-            reqClassesString += " ";
-        }
+        requiredClassesString = requiredClassesString?.trim();
     }
 
-    const classesByPredicates = Object.keys(classesObj)
+    const conditionalClassesString = Object.keys(conditionalClasses)
         .map(key => key?.trim())
-        .filter(key => key && Object.prototype.hasOwnProperty.call(classesObj, key))
+        .filter(key => key && Object.prototype.hasOwnProperty.call(conditionalClasses, key))
         .map(key => {
             return {
                 key: key,
-                value: classesObj[key]
+                value: conditionalClasses[key]
             };
         })
         .filter(kv => getBoolExpValue(kv.value))
         .map(kv => kv.key.trim())
         .join(" ");
-    return reqClassesString + classesByPredicates;
+
+    if (requiredClassesString && conditionalClassesString) {
+        requiredClassesString += " ";
+    }
+
+    return requiredClassesString + conditionalClassesString;
 }

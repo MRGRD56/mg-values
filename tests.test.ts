@@ -61,3 +61,13 @@ test("classes test 4 with second parameter, string[]", () => {
     }, ["my-element", "mb-3"]);
     expect(actual).toBe("my-element mb-3 red blue");
 });
+
+test("classes test 5", () => {
+    const actual = classes({}, ["one", undefined, "two", "  ", "", "  three"]);
+    expect(actual).toBe("one two three");
+});
+
+test("classes test 6 empty", () => {
+    const actual = classes();
+    expect(actual).toBe("");
+});
